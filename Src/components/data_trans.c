@@ -61,25 +61,26 @@ typedef union
 void DataTrans_Task(uint32_t dT_ms)
 {
 	static uint32_t cnt = 0;
-	const uint32_t sent_imu_cnt = 1;
+	const uint32_t sent_imu_cnt = 20;
 	const uint32_t sent_odom_cnt = 20;
 	const uint32_t sent_userdata_cnt = 40;
 	const uint32_t sent_wheel_cnt = 30;
 
 	cnt += dT_ms;
 
-	// if((cnt % sent_odom_cnt) == sent_odom_cnt - 1)
-	// {
-	// 	DataTrans_Odom();
-	// }
-	// else if((cnt % sent_userdata_cnt) == sent_userdata_cnt - 1)
-	// {
-	// 	DataTrans_UserData();
-	// }
 	if ((cnt % sent_imu_cnt) == sent_imu_cnt - 1)
 	{
 		DataTrans_IMU_Raw();
 	}
+
+	if ((cnt % sent_odom_cnt) == sent_odom_cnt - 1)
+	{
+		DataTrans_Odom();
+	}
+	// else if((cnt % sent_userdata_cnt) == sent_userdata_cnt - 1)
+	// {
+	// 	DataTrans_UserData();
+	// }
 
 	if (cnt > 1200)
 		cnt = 0;
@@ -92,20 +93,22 @@ void DataTrans_IMU_Raw(void)
 {
 	uint8_t _cnt = 0;
 	data_u_float _temp;
-	uint8_t data_to_send[100] = {0};
+	uint8_t data_to_send[20] = {0};
 
 	data_to_send[_cnt++] = 0xAA;
 	data_to_send[_cnt++] = 0x55;
 
-	uint8_t _start = _cnt;
+	uint8_t _start = _cnt; // 数据起始下标
 
-	// IMU数据序号
+	data_to_send[_cnt++] = 0x81; // IMU 数据标记
+
+	// IMU 数据序号
 	for (int i = 0; i < 4; i++)
 	{
 		data_to_send[_cnt++] = *((uint8_t *)(&imu_data_cnt) + i);
 	}
 
-	// IMU数据打包
+	// IMU 数据打包
 	for (int i = 0; i < 6; i++)
 	{
 		data_to_send[_cnt++] = *((uint8_t *)(sensor.Gyro_Original) + i);
@@ -115,11 +118,11 @@ void DataTrans_IMU_Raw(void)
 		data_to_send[_cnt++] = *((uint8_t *)(sensor.Acc_Original) + i);
 	}
 
-	// 里程计数据打包
-	for (int i = 0; i < 8; i++)
-	{
-		data_to_send[_cnt++] = *((uint8_t *)(sensor.encoder_incre) + i);
-	}
+	// // 里程计数据打包
+	// for (int i = 0; i < 8; i++)
+	// {
+	// 	data_to_send[_cnt++] = *((uint8_t *)(sensor.encoder_incre) + i);
+	// }
 
 	uint8_t checkout = 0;
 	for (int i = _start; i < _cnt; i++)
@@ -127,9 +130,9 @@ void DataTrans_IMU_Raw(void)
 		checkout += data_to_send[i];
 	}
 	data_to_send[_cnt++] = checkout;
+	data_to_send[_cnt++] = 0xFF;
 	// 串口发送
 	SendData(data_to_send, _cnt);
-	
 }
 /**
  * @brief 发送用户自定义数据
@@ -179,13 +182,15 @@ void DataTrans_UserData(void)
 void DataTrans_Odom(void)
 {
 	uint8_t _cnt = 0;
-	data_u_float _temp;				 // 声明一个联合体实例，使用它将待发送数据转换为字节数组
-	uint8_t data_to_send[100] = {0}; // 待发送的字节数组
+	data_u_float _temp;				// 声明一个联合体实例，使用它将待发送数据转换为字节数组
+	uint8_t data_to_send[20] = {0}; // 待发送的字节数组
 
 	data_to_send[_cnt++] = 0xAA;
 	data_to_send[_cnt++] = 0x55;
 
 	uint8_t _start = _cnt;
+
+	data_to_send[_cnt++] = 0x82; //  里程计数据标记
 
 	float datas[] = {kinematics.odom.vel.linear_x,
 					 kinematics.odom.vel.linear_y,
@@ -209,8 +214,9 @@ void DataTrans_Odom(void)
 		checkout += data_to_send[i];
 	}
 	data_to_send[_cnt++] = checkout;
+	data_to_send[_cnt++] = 0xFF;
 	// 串口发送
-	// SendData(data_to_send, _cnt);
+	SendData(data_to_send, _cnt);
 }
 
 /**
@@ -234,12 +240,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		HAL_UART_Receive_IT(&huart1, data_one_byte, 1);
 	}
 
-	if (huart->Instance == LPUART1)
-	{
-		GetOneByte(data_one_byte[0]);
-		// 在完成一次接收后，串口中断会被关闭，需要再次打开
-		HAL_UART_Receive_IT(&hlpuart1, data_one_byte, 1);
-	}
+	// if (huart->Instance == LPUART1)
+	// {
+	// 	GetOneByte(data_one_byte[0]);
+	// 	// 在完成一次接收后，串口中断会被关闭，需要再次打开
+	// 	HAL_UART_Receive_IT(&hlpuart1, data_one_byte, 1);
+	// }
 }
 
 /**
@@ -268,36 +274,6 @@ void GetOneByte(uint8_t data)
 
 		if (data == 0xFF && data_cnt >= 18)
 		{
-			SendData(data_receive, data_cnt);
-			/**
-			 * 运动控制串口数据帧设计
-			 * | 数据位  | 数据说明     |
-			 * | :----- | ------------ |
-			 * | 0      | 帧头1 `0xAA` |
-			 * | 1      | 帧头2 `0x55` |
-			 * | 2      | 数据类型标记   |
-			 * | 3      | 保留         |
-			 * | 4      | x 运动速度	    |
-			 * | 5      | y 运动速度    |
-			 * | 6      | z 运动速度    |
-			 * | 7      | z 运动速度	|
-			 * | 8      | z 运动速度	|
-			 * | 9      | z 运动速度	|
-			 * | 10     | 保留			|
-			 * | 11     | 保留			|
-			 * | 12     | 保留			|
-			 * | 13     | 保留			|
-			 * | 14     | 保留			|
-			 * | 15     | 保留			|
-			 * | 16     | 校验和		|
-			 * | 17     | 帧尾 `0xFF` 	|
-			 *
-			 *
-			 * - x,y 速度  int8 类型 -128～127 刚好就是 1.3
-			 * - z   速度 float 类型 不然精度不够
-			 * - 不可以发送太长，否则接收不到
-			 */
-
 			// 校验
 			uint8_t checkout = 0;
 			for (int i = 2; i < data_cnt - 2; i++)
@@ -307,8 +283,8 @@ void GetOneByte(uint8_t data)
 			if (checkout == data_receive[data_cnt - 2])
 			{
 				// 校验通过，进行解码
-				
-				DataDecoder(data_receive, 20);
+				SendData(data_receive, data_cnt);
+				DataDecoder(data_receive, 18);
 				HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 			}
 
@@ -331,6 +307,8 @@ uint8_t reset_checkout[12] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x
  */
 void DataDecoder(uint8_t *data, uint8_t len)
 {
+	// AA 55 00 00 0A 00 00 00 00 00 00 00 00 00 00 00 0A FF
+	// AA 55 00 00 00 0A 00 00 00 00 00 00 00 00 00 00 0A FF
 	uint8_t _cnt = 0;
 
 	if (flag.robot_sta == MODE_UART_CTRL)

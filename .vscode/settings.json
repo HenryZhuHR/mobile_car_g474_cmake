@@ -1,0 +1,23 @@
+{
+    "cortex-debug.gdbPath": "/Users/henryzhu/program/gcc-arm-none-eabi/bin/arm-none-eabi-gdb",
+    "files.exclude": {
+        "**/Drivers": true,
+    },
+    "files.associations": {
+        "sensor_basic.h": "c",
+        "fastmath.h": "c",
+        "motor.h": "c",
+        "icm20602.h": "c",
+        "stm32g4xx_hal.h": "c",
+        "main.h": "c",
+        "math.h": "c",
+        "data_trans.h": "c",
+        "user_ctrl.h": "c",
+        "array": "c",
+        "vector": "c",
+        "locale": "c",
+        "string": "c",
+        "stdio.h": "c",
+        "scheduler.h": "c"
+    }
+}

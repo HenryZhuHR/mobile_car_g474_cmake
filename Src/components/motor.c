@@ -188,13 +188,13 @@ void Motor_Task(uint32_t dT_us)
 	pid[FR].out = Get_MiMx(pid[FR].out, -1.0, 1.0);	 // 输出限幅
 
 	// 左后轮PID控制
-	PID_Controller(dT_us,							 // 控制周期
-				   kinematics.exp_wheel_rpm.motor_3, // 期望值
-				   kinematics.fb_wheel_rpm.motor_3,	 // 反馈值
-				   &pid[BL],						 // PID参数
-				   0,								 // 单次积分限幅
-				   0);								 // 积分限幅
-	pid[BL].out = Get_MiMx(pid[BL].out, -1.0, 1.0)* 0.8f;	 // 输出限幅
+	PID_Controller(dT_us,								   // 控制周期
+				   kinematics.exp_wheel_rpm.motor_3,	   // 期望值
+				   kinematics.fb_wheel_rpm.motor_3,		   // 反馈值
+				   &pid[BL],							   // PID参数
+				   0,									   // 单次积分限幅
+				   0);									   // 积分限幅
+	pid[BL].out = Get_MiMx(pid[BL].out, -1.0, 1.0) * 0.8f; // 输出限幅
 
 	// 右后轮PID控制
 	PID_Controller(dT_us,								   // 控制周期
@@ -227,6 +227,7 @@ void Exp_Speed_Cal(uint32_t dT_us)
 	float x_rpm;
 	float y_rpm;
 	float tan_rpm;
+
 
 	// 将 m/s 转换为 m/min
 	linear_vel_x_mins = kinematics.exp_vel.linear_x * 60.0f;
