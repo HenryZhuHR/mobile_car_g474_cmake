@@ -1,12 +1,28 @@
 project_name="Mobile_Car_G474"
 
-rm -rf cmake-build-debug
-mkdir -p cmake-build-debug
-cd cmake-build-debug
 
-cmake .. -G "MinGW Makefiles"
+# rm -rf build
 
-make
+if [ ! -d build ]; then
+    mkdir -p build
+fi
+cd build
+
+
+CMAKE_ARGS=""
+NUM_CORES=`nproc --all`
+
+if [ "$(uname)" = "Darwin" ]; then
+    NUM_CORES=`sysctl -n hw.ncpu`
+elif [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
+    CMAKE_ARGS="-G \"MinGW Makefiles"\"
+fi
+
+
+cmake .. $CMAKE_ARGS
+make -j$NUM_CORES
+
+
 export openocd_scripts=$OPENOCD_HOME/openocd/scripts
 
 
