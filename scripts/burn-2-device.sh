@@ -1,10 +1,10 @@
 project_name="Mobile_Car_G474"
 
-# rm -rf cmake-build-debug
+rm -rf cmake-build-debug
 mkdir -p cmake-build-debug
 cd cmake-build-debug
 
-cmake ..
+cmake .. -G "MinGW Makefiles"
 
 make
 export openocd_scripts=$OPENOCD_HOME/openocd/scripts

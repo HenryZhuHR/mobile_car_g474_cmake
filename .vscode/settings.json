@@ -19,5 +19,6 @@
         "string": "c",
         "stdio.h": "c",
         "scheduler.h": "c"
-    }
+    },
+    "cmake.configureOnOpen": true
 }

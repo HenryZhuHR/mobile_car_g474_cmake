@@ -21,7 +21,7 @@
  ************************
  */
 
-#define USE_USB
+// #define USE_USB
 
 /**
  * @brief 数据发送函数
@@ -77,6 +77,8 @@ void DataTrans_Task(uint32_t dT_ms)
 	{
 		DataTrans_Odom();
 	}
+
+
 	// else if((cnt % sent_userdata_cnt) == sent_userdata_cnt - 1)
 	// {
 	// 	DataTrans_UserData();
@@ -240,12 +242,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		HAL_UART_Receive_IT(&huart1, data_one_byte, 1);
 	}
 
-	// if (huart->Instance == LPUART1)
-	// {
-	// 	GetOneByte(data_one_byte[0]);
-	// 	// 在完成一次接收后，串口中断会被关闭，需要再次打开
-	// 	HAL_UART_Receive_IT(&hlpuart1, data_one_byte, 1);
-	// }
+	if (huart->Instance == LPUART1)
+	{
+		GetOneByte(data_one_byte[0]);
+		// 在完成一次接收后，串口中断会被关闭，需要再次打开
+		HAL_UART_Receive_IT(&hlpuart1, data_one_byte, 1);
+	}
 }
 
 /**
