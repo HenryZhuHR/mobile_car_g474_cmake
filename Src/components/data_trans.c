@@ -313,8 +313,6 @@ uint8_t reset_checkout[12] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x
  */
 void DataDecoder(uint8_t *data, uint8_t len)
 {
-	// AA 55 00 00 0A 00 00 00 00 00 00 00 00 00 00 00 0A FF
-	// AA 55 00 00 00 0A 00 00 00 00 00 00 00 00 00 00 0A FF
 	uint8_t _cnt = 0;
 
 	if (flag.robot_sta == MODE_UART_CTRL)

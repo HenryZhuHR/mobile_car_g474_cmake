@@ -203,12 +203,11 @@ void Motor_Task(uint32_t dT_us)
 				   &pid[BR],							   // PID参数
 				   0,									   // 单次积分限幅
 				   0);									   // 积分限幅
-	pid[BR].out = Get_MiMx(pid[BR].out, -1.0, 1.0) * 0.7f; // 输出限幅
+	pid[BR].out = Get_MiMx(pid[BR].out, -1.0, 1.0) * 0.8f; // 输出限幅
 
 	// 将PID计算结果转换为PWM占空比
 	kinematics.pwm.motor_1 = -pid[FL].out;
 	kinematics.pwm.motor_2 = -pid[FR].out;
-
 	kinematics.pwm.motor_3 = -pid[BL].out;
 	kinematics.pwm.motor_4 = -pid[BR].out;
 	// 输出到电机
