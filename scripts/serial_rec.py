@@ -11,13 +11,17 @@ tty.usbserial-1110
 """
 
 DATA_FLAG = (
+    (0x11, "imu", 18),
     (0x81, "imu", 21),
     (0x82, "odometer", 21),
 )
 
 
 def main():
-    serial_port = "/dev/tty.usbmodem11103"
+    """
+    ls /dev/tty*
+    """
+    serial_port = "/dev/tty.usbserial-11140"
     baudrate = 115200
     ser_base = "/dev/cu.usbmodem"
     ser = None
@@ -54,7 +58,7 @@ def main():
             data = ser.read(1)
             if data is not None and len(data) > 0:
                 u8_data = struct.unpack('B', data)[0]
-                # print(type(u8_data),hex(u8_data), u8_data)
+                print(type(u8_data),hex(u8_data), u8_data)
 
                 if state == 0 and u8_data == 0xAA:
                     data_receive[cnt_] = u8_data

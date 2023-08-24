@@ -41,7 +41,7 @@ data_send = send(0, 0, 0.1)
 data_send_hex = " ".join(["%02X" % d for d in data_send])
 print(data_send_hex)
 
-exit()
+# exit()
 
 # 获取所有串口设备实例。
 # 如果没找到串口设备，则输出：“无串口设备。”
@@ -59,7 +59,7 @@ cu.usbserial-1110
 tty.usbmodem11303
 tty.usbserial-1110
 """
-ser_base = "/dev/cu.usbmodem"
+ser_base = "/dev/cu.usbserial"
 
 ser = None
 for comport in list(serial.tools.list_ports.comports()):
@@ -68,14 +68,14 @@ for comport in list(serial.tools.list_ports.comports()):
     if len(ser_base) < len(port):
         if ser_base == port[:len(ser_base)]:
             print("find port:", port)
-            ser = serial.Serial(
-                port,
-                baudrate=460800,
-                bytesize=serial.EIGHTBITS,  # 数据位
-                parity=serial.PARITY_NONE,  # 奇偶校验
-                stopbits=serial.STOPBITS_ONE,  # 停止位
-                timeout=0.5  # 读超时设置
-            )
+            # ser = serial.Serial(
+            #     port,
+            #     baudrate=460800,
+            #     bytesize=serial.EIGHTBITS,  # 数据位
+            #     parity=serial.PARITY_NONE,  # 奇偶校验
+            #     stopbits=serial.STOPBITS_ONE,  # 停止位
+            #     timeout=0.5  # 读超时设置
+            # )
             serR = serial.Serial(
                 port,
                 baudrate=460800,
@@ -84,7 +84,7 @@ for comport in list(serial.tools.list_ports.comports()):
                 stopbits=serial.STOPBITS_ONE,  # 停止位
                 timeout=0.5  # 读超时设置
             )
-if ser is None:
+if serR is None:
     print("no port found")
     exit(0)
 
@@ -98,35 +98,35 @@ while True:
     now_time = time.time()
     now_time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(now_time))
 
-    # 接受串口数据
-    data = ser.read(1)
-    if data is not None and len(data) > 0:
-        u8_data = struct.unpack('B', data)[0]
-        # print(f"[{now_time_str}]", hex(u8_data), u8_data)
-        if state == 0 and u8_data == 0xAA:
-            state = 1
-        elif state == 1 and u8_data == 0x55:
-            state = 2
-        elif state == 2:
-            if cnt_ >= len(data_receive):
-                cnt_ = 0
-            data_receive[cnt_] = u8_data
-            cnt_ += 1
-            if u8_data == 0xFF:
-                checksum_indx = cnt_ - 2
-                checksum = 0
-                # for i in range(checksum_indx):
-                #     checksum += data_receive[i]
-                # if checksum == data_receive[checksum_indx]:
-                data_receive_hex = [hex(0xAA), hex(0x55)
-                                    ] + [hex(i) for i in data_receive[:cnt_]]
-                print(f"[{now_time_str}][收到]",
-                      " ".join(["%02X" % d for d in data_receive_hex]))
-                state = 0
-                cnt_ = 0
-        else:
-            state = 0
-            cnt_ = 0
+    # # 接受串口数据
+    # data = ser.read(1)
+    # if data is not None and len(data) > 0:
+    #     u8_data = struct.unpack('B', data)[0]
+    #     # print(f"[{now_time_str}]", hex(u8_data), u8_data)
+    #     if state == 0 and u8_data == 0xAA:
+    #         state = 1
+    #     elif state == 1 and u8_data == 0x55:
+    #         state = 2
+    #     elif state == 2:
+    #         if cnt_ >= len(data_receive):
+    #             cnt_ = 0
+    #         data_receive[cnt_] = u8_data
+    #         cnt_ += 1
+    #         if u8_data == 0xFF:
+    #             checksum_indx = cnt_ - 2
+    #             checksum = 0
+    #             # for i in range(checksum_indx):
+    #             #     checksum += data_receive[i]
+    #             # if checksum == data_receive[checksum_indx]:
+    #             data_receive_hex = [hex(0xAA), hex(0x55)
+    #                                 ] + [hex(i) for i in data_receive[:cnt_]]
+    #             print(f"[{now_time_str}][收到]",
+    #                   " ".join(["%02X" % d for d in data_receive_hex]))
+    #             state = 0
+    #             cnt_ = 0
+    #     else:
+    #         state = 0
+    #         cnt_ = 0
 
     # 发送串口数据
     if now_time - last_time > 1:
@@ -134,7 +134,8 @@ while True:
         u8_data_send = struct.pack('B' * len(data_send), *data_send)
         serR.write(u8_data_send)
         print(f"[{now_time_str}][发送]",
-              " ".join(["%02X" % d for d in u8_data_send]))
+              " ".join(["%02X" % d for d in u8_data_send]),
+              )
         print(f"[{now_time_str}][D_R ]",
               " ".join(["%02X" % d for d in data_receive]))
         print()

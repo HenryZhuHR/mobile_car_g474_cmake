@@ -284,9 +284,13 @@ void GetOneByte(uint8_t data)
 			}
 			if (checkout == data_receive[data_cnt - 2])
 			{
+
+				if (data_receive[2] == 0x11)
+				{
+					DataDecoder(data_receive, 18);
+				}
 				// 校验通过，进行解码
 				SendData(data_receive, data_cnt);
-				DataDecoder(data_receive, 18);
 				HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 			}
 
