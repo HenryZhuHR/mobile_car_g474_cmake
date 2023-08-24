@@ -16,7 +16,7 @@ def send(x: float, y: float, z: float):
     data_send = [0x00] * 18
     data_send[0] = 0xAA  # header 1
     data_send[1] = 0x55  # header 2
-    data_send[2] = 0x00  # 数据类型标记
+    data_send[2] = 0x11  # 数据类型标记
     data_send[3] = 0x00  # 保留
     data_send[4] = x_bytes[0]
     data_send[5] = y_bytes[0]
