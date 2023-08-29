@@ -21,7 +21,7 @@
  ************************
  */
 
-// #define USE_USB
+#define USE_USB
 
 /**
  * @brief 数据发送函数
@@ -61,8 +61,8 @@ typedef union
 void DataTrans_Task(uint32_t dT_ms)
 {
 	static uint32_t cnt = 0;
-	const uint32_t sent_imu_cnt = 20;
-	const uint32_t sent_odom_cnt = 20;
+	const uint32_t sent_imu_cnt = 1;
+	const uint32_t sent_odom_cnt = 5;
 	const uint32_t sent_userdata_cnt = 40;
 	const uint32_t sent_wheel_cnt = 30;
 
@@ -77,7 +77,6 @@ void DataTrans_Task(uint32_t dT_ms)
 	{
 		DataTrans_Odom();
 	}
-
 
 	// else if((cnt % sent_userdata_cnt) == sent_userdata_cnt - 1)
 	// {
@@ -274,7 +273,7 @@ void GetOneByte(uint8_t data)
 	{
 		data_receive[data_cnt++] = data;
 
-		if (data == 0xFF && data_cnt >= 18)
+		if (data == 0xFF && data_cnt == 18)
 		{
 			// 校验
 			uint8_t checkout = 0;
@@ -284,13 +283,13 @@ void GetOneByte(uint8_t data)
 			}
 			if (checkout == data_receive[data_cnt - 2])
 			{
-
-				if (data_receive[2] == 0x11)
-				{
-					DataDecoder(data_receive, 18);
-				}
+				DataDecoder(data_receive, 18);
+				// if (data_receive[2] == 0x11)
+				// {
+				// 	DataDecoder(data_receive, 18);
+				// }
 				// 校验通过，进行解码
-				SendData(data_receive, data_cnt);
+				// SendData(data_receive, data_cnt);
 				HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 			}
 

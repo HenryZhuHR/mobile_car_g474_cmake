@@ -1,7 +1,7 @@
 project_name="Mobile_Car_G474"
 
 
-# rm -rf build
+rm -rf build
 
 if [ ! -d build ]; then
     mkdir -p build
@@ -19,7 +19,7 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
 fi
 
 
-cmake .. $CMAKE_ARGS
+cmake .. $CMAKE_ARGS 
 make -j$NUM_CORES
 
 

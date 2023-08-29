@@ -29,19 +29,19 @@ def send(x: float, y: float, z: float):
     return data_send
 
 
-data_send = send(0.1, 0, 0)
+data_send = send(0.4, 0, 0)
 data_send_hex = " ".join(["%02X" % d for d in data_send])
 print(data_send_hex)
 
-data_send = send(0, 0.1, 0)
+data_send = send(0, 0.2, 0)
 data_send_hex = " ".join(["%02X" % d for d in data_send])
 print(data_send_hex)
 
-data_send = send(0, 0, 0.1)
+data_send = send(0, 0, 0.2)
 data_send_hex = " ".join(["%02X" % d for d in data_send])
 print(data_send_hex)
 
-# exit()
+exit()
 
 # 获取所有串口设备实例。
 # 如果没找到串口设备，则输出：“无串口设备。”

@@ -21,7 +21,7 @@ def main():
     """
     ls /dev/tty*
     """
-    serial_port = "/dev/tty.usbserial-11140"
+    serial_port = "/dev/tty.usbserial-1110"
     baudrate = 115200
     ser_base = "/dev/cu.usbmodem"
     ser = None
@@ -58,7 +58,7 @@ def main():
             data = ser.read(1)
             if data is not None and len(data) > 0:
                 u8_data = struct.unpack('B', data)[0]
-                print(type(u8_data),hex(u8_data), u8_data)
+                # print(type(u8_data),hex(u8_data), u8_data)
 
                 if state == 0 and u8_data == 0xAA:
                     data_receive[cnt_] = u8_data
@@ -95,7 +95,7 @@ def main():
                             checksum += data_receive[i]
                         checksum = checksum & 0xFF
                         if checksum == data_receive[checksum_indx]:
-                            data = data_receive[2:checksum_indx]
+                            data = data_receive[:cnt_]
                             now_time_str = time.strftime(
                                 "%Y-%m-%d %H:%M:%S",
                                 time.localtime(time.time()))
