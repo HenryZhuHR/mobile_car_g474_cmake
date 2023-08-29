@@ -194,7 +194,7 @@ void Motor_Task(uint32_t dT_us)
 				   &pid[BL],						 // PID参数
 				   0,								 // 单次积分限幅
 				   0);								 // 积分限幅
-	pid[BL].out = Get_MiMx(pid[BL].out, -1.0, 1.0)* 0.75f;	 // 输出限幅
+	pid[BL].out = Get_MiMx(pid[BL].out, -1.0, 1.0)* 0.7f;	 // 输出限幅
 
 	// 右后轮PID控制
 	PID_Controller(dT_us,								   // 控制周期
@@ -203,7 +203,7 @@ void Motor_Task(uint32_t dT_us)
 				   &pid[BR],							   // PID参数
 				   0,									   // 单次积分限幅
 				   0);									   // 积分限幅
-	pid[BR].out = Get_MiMx(pid[BR].out, -1.0, 1.0) * 0.75f; // 输出限幅
+	pid[BR].out = Get_MiMx(pid[BR].out, -1.0, 1.0) * 0.7f; // 输出限幅
 
 	// 将PID计算结果转换为PWM占空比
 	kinematics.pwm.motor_1 = -pid[FL].out;

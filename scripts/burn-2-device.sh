@@ -14,12 +14,14 @@ NUM_CORES=`nproc --all`
 
 if [ "$(uname)" = "Darwin" ]; then
     NUM_CORES=`sysctl -n hw.ncpu`
-elif [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
-    CMAKE_ARGS="-G \"MinGW Makefiles"\"
 fi
 
+if [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
+    cmake .. -G "MinGW Makefiles"
+else
+    cmake .. $CMAKE_ARGS 
+fi
 
-cmake .. $CMAKE_ARGS 
 make -j$NUM_CORES
 
 
