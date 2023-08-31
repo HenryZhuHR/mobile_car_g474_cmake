@@ -4,7 +4,7 @@ import serial
 import serial.tools.list_ports
 import numpy as np
 """
-ls /dev/tty* /dev/cu*
+ls /dev/tty.usb*
 cu.usbmodem11303
 cu.usbserial-1110
 tty.usbmodem11303
@@ -13,7 +13,7 @@ tty.usbserial-1110
 
 
 def main():
-    serial_port = "/dev/tty.usbserial-1110"
+    serial_port = "/dev/tty.usbmodem11103"
     baudrate = 115200
     ser_base = "/dev/tty"
     ser = None
@@ -39,9 +39,9 @@ def main():
         return
 
     STATE_LIST = [
-        (0.1, 0, 0),
+        (0.2, 0, 0),
         (0, 0.1, 0),
-        (0, 0, 0.1),
+        (0, 0, 1),
     ]
     state_idx = 0
     state_cnt = 0
@@ -60,6 +60,11 @@ def main():
         print("KeyboardInterrupt")
 
     finally:
+        cnt=100
+        while cnt>0:
+            cnt-=1
+            buffer = set_buffer(0, 0, 0)
+            ser.write(buffer)
         ser.close()
 
 

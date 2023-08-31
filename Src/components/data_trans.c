@@ -135,12 +135,6 @@ void DataTrans_IMU_Raw(void)
 	data_to_send[_cnt++] = _temp.data_array[2];
 	data_to_send[_cnt++] = _temp.data_array[3]; // 最高位
 
-	// // 里程计数据打包
-	// for (int i = 0; i < 8; i++)
-	// {
-	// 	data_to_send[_cnt++] = *((uint8_t *)(sensor.encoder_incre) + i);
-	// }
-
 	uint8_t checkout = 0;
 	for (int i = _start; i < _cnt; i++)
 	{
@@ -213,7 +207,7 @@ void DataTrans_Odom(void)
 					 kinematics.odom.vel.linear_y,
 					 kinematics.odom.vel.angular_z,
 					 kinematics.odom.pose.theta};
-    printf("linear_x: %10f linear_y: %10f angular_z: %10f\r\n", kinematics.odom.vel.linear_x, kinematics.odom.vel.linear_y,kinematics.odom.vel.angular_z);
+	// printf("linear_x: %10f linear_y: %10f angular_z: %10f\r\n", kinematics.odom.vel.linear_x, kinematics.odom.vel.linear_y,kinematics.odom.vel.angular_z);
 	for (int i = 0; i < sizeof(datas) / sizeof(float); i++)
 	{
 		// 将要发送的数据赋值给联合体的float成员

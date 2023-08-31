@@ -9,23 +9,28 @@ fi
 cd build
 
 
-CMAKE_ARGS=""
-NUM_CORES=`nproc --all`
 
 if [ "$(uname)" = "Darwin" ]; then
     NUM_CORES=`sysctl -n hw.ncpu`
+else
+    NUM_CORES=`nproc --all`
 fi
 
-if [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
+
+if [ "$(expr substr $(uname -s) 1 5)" = "MINGW" ]; then
     cmake .. -G "MinGW Makefiles"
 else
-    cmake .. $CMAKE_ARGS 
+    cmake ..
 fi
+
+
 
 make -j$NUM_CORES
 
 
+
 export openocd_scripts=$OPENOCD_HOME/openocd/scripts
+
 
 
 openocd \

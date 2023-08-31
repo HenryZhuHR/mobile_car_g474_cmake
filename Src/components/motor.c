@@ -194,7 +194,7 @@ void Motor_Task(uint32_t dT_us)
 				   &pid[BL],						 // PID参数
 				   0,								 // 单次积分限幅
 				   0);								 // 积分限幅
-	pid[BL].out = Get_MiMx(pid[BL].out, -1.0, 1.0)* 0.7f;	 // 输出限幅
+	pid[BL].out = Get_MiMx(pid[BL].out, -1.0, 1.0)* 1.0f;	 // 输出限幅
 
 	// 右后轮PID控制
 	PID_Controller(dT_us,								   // 控制周期

@@ -93,10 +93,9 @@ static void Loop_Task_9(uint32_t dT_us) // 50ms执行一次
 	/* 遥控任务 */
 	RemoteCtrl_Task(50);
 
-	/* 发送里程计数据 */
-	//	DataTrans_Odom();
 	/* 数据传输任务 */
 	DataTrans_Task(1);
+	// printf("rol: %10f pit: %10f yaw: %10f\r\n", imu_data.rol, imu_data.pit, imu_data.yaw);
 
 	/* 电池电压测量任务 */
 	Battery_Task(50);

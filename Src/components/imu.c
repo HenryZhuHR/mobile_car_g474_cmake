@@ -284,7 +284,7 @@ void ImuUpdate_Task(uint32_t dT_ms)
     if (imu_data.yaw >= 0)
         imu_data.yaw = 360 - imu_data.yaw;
     else
-        imu_data.yaw =  - imu_data.yaw;
+        imu_data.yaw = -imu_data.yaw;
 
     // imu_data.yaw = -imu_data.yaw;
 }

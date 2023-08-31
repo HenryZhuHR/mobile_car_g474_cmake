@@ -1,8 +1,8 @@
 {
     "cortex-debug.gdbPath": "/Users/henryzhu/program/gcc-arm-none-eabi/bin/arm-none-eabi-gdb",
-    "files.exclude": {
-        "**/Drivers": true,
-    },
+    // "files.exclude": {
+    //     "**/Drivers": true,
+    // },
     "files.associations": {
         "sensor_basic.h": "c",
         "fastmath.h": "c",
@@ -18,7 +18,9 @@
         "locale": "c",
         "string": "c",
         "stdio.h": "c",
-        "scheduler.h": "c"
+        "scheduler.h": "c",
+        "retarget.h": "c"
     },
-    "cmake.configureOnOpen": true
+    "cmake.configureOnOpen": true,
+    "C_Cpp.default.compilerPath": "/Users/henryzhu/program/gcc-arm-none-eabi/bin/arm-none-eabi-gcc"
 }
