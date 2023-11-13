@@ -7,11 +7,13 @@ import numpy as np
 
 
 """
-ls /dev/tty* /dev/cu.* 
-cu.usbmodem11303
-cu.usbserial-1110
+ls /dev/tty.usb*
 tty.usbmodem11303
 tty.usbserial-1110
+
+ls /dev/cu.*
+cu.usbmodem11303
+cu.usbserial-1110
 """
 
 
@@ -79,8 +81,20 @@ SERIAL_DATA_LEN_MAP = (
 
 
 def main():
-    serial_port = "/dev/tty.usbmodem11103"
+    serial_port = None  # "/dev/cu.usbmodem213203"
     baudrate = 115200
+
+    if serial_port is None:
+        serial_ports = try_find_port()
+        if len(serial_ports) == 0:
+            print("no port found")
+            return
+        else:
+            print("find ports:")
+            for p in serial_ports:
+                print(f" -- {p}")
+            serial_port = serial_ports[0]
+
     ser = serial.Serial(
         serial_port,
         baudrate=baudrate,
@@ -90,9 +104,7 @@ def main():
         timeout=10 / 1000,  # 读超时设置
     )
 
-    if ser is None:
-        print("no port found")
-        return
+    assert ser is not None, "no port found"
 
     try:
         header = [0xAA, 0x55]
@@ -158,7 +170,7 @@ def main():
                                 f"[{now_time_str}][收] [{rcnt_}/{frame_len}] ({data_type})",
                                 # " ".join(["%02X" % d for d in data_frame]),
                                 f"({int(data.attitude.yaw)})",  # data_str,
-                                f"{data_str}"
+                                f"{data_str}",
                             )
                             rstate = 0
                             rcnt_ = 0
@@ -172,6 +184,29 @@ def main():
 
     finally:
         ser.close()
+
+
+def try_find_port():
+    import platform
+
+    sysstr = platform.system()
+    OS_MAP = {
+        "Darwin": "/dev/cu.usbmodem",
+        "Linux": "/dev/ttyACM",
+        "Windows": "COM",
+    }
+    assert sysstr in OS_MAP.keys(), "not support system: %s" % sysstr
+    serial_port_base: str = OS_MAP[sysstr]
+    serial_ports = []
+    for comport in list(serial.tools.list_ports.comports()):
+        port = list(comport)[0]
+        # print(serial_port_base, port)
+        if len(serial_port_base) < len(port):
+            if serial_port_base == port[: len(serial_port_base)]:
+                # print("find port:", port)
+                serial_port = port
+                serial_ports.append(serial_port)
+    return serial_ports
 
 
 if __name__ == "__main__":

@@ -3,43 +3,45 @@ import time
 import serial
 import serial.tools.list_ports
 import numpy as np
+
 """
 ls /dev/tty.usb*
-cu.usbmodem11303
-cu.usbserial-1110
 tty.usbmodem11303
 tty.usbserial-1110
+
+ls /dev/cu.*
+cu.usbmodem11303
+cu.usbserial-1110
 """
 
 
 def main():
-    serial_port = "/dev/tty.usbmodem11103"
+    serial_port = None  # "/dev/cu.usbmodem213203"
     baudrate = 115200
-    ser_base = "/dev/tty"
-    ser = None
+
     if serial_port is None:
-        for comport in list(serial.tools.list_ports.comports()):
-            port = list(comport)[0]
-            print(ser_base, port)
-            if len(ser_base) < len(port):
-                if ser_base == port[:len(ser_base)]:
-                    print("find port:", port)
-                    serial_port = port
+        serial_ports = try_find_port()
+        if len(serial_ports) == 0:
+            print("no port found")
+            return
+        else:
+            print("find ports:")
+            for p in serial_ports:
+                print(f" -- {p}")
+            serial_port = serial_ports[0]
     ser = serial.Serial(
         serial_port,
         baudrate=baudrate,
         bytesize=serial.EIGHTBITS,  # 数据位
         parity=serial.PARITY_NONE,  # 奇偶校验
         stopbits=serial.STOPBITS_ONE,  # 停止位
-        timeout=0.1  # 读超时设置
+        timeout=0.1,  # 读超时设置
     )
 
-    if ser is None:
-        print("no port found")
-        return
+    assert ser is not None, "no port found"
 
     STATE_LIST = [
-        (0.2, 0, 0),
+        (0.1, 0, 0),
         (0, 0.1, 0),
         (0, 0, 1),
     ]
@@ -60,9 +62,9 @@ def main():
         print("KeyboardInterrupt")
 
     finally:
-        cnt=100
-        while cnt>0:
-            cnt-=1
+        cnt = 100
+        while cnt > 0:
+            cnt -= 1
             buffer = set_buffer(0, 0, 0)
             ser.write(buffer)
         ser.close()
@@ -70,9 +72,9 @@ def main():
 
 def set_buffer(x: float, y: float, z: float):
     # float 转化为 小端4 byte
-    x_bytes = struct.pack('b', int(x * 100))
-    y_bytes = struct.pack('b', int(y * 100))
-    z_bytes = struct.pack('f', float(z))
+    x_bytes = struct.pack("b", int(x * 100))
+    y_bytes = struct.pack("b", int(y * 100))
+    z_bytes = struct.pack("f", float(z))
     # print("x =", x, ":", " ".join(["%02X" % d for d in x_bytes]))
     # print("y =", y, ":", " ".join(["%02X" % d for d in y_bytes]))
     # print("z =", z, ":", " ".join(["%02X" % d for d in z_bytes]))
@@ -90,6 +92,29 @@ def set_buffer(x: float, y: float, z: float):
     buffer[-2] = sum(buffer[2:-2]) & 0xFF  # checksum
     buffer[-1] = 0xFF  # tail
     return buffer
+
+
+def try_find_port():
+    import platform
+
+    sysstr = platform.system()
+    OS_MAP = {
+        "Darwin": "/dev/cu.usbmodem",
+        "Linux": "/dev/ttyACM",
+        "Windows": "COM",
+    }
+    assert sysstr in OS_MAP.keys(), "not support system: %s" % sysstr
+    serial_port_base: str = OS_MAP[sysstr]
+    serial_ports = []
+    for comport in list(serial.tools.list_ports.comports()):
+        port = list(comport)[0]
+        # print(serial_port_base, port)
+        if len(serial_port_base) < len(port):
+            if serial_port_base == port[: len(serial_port_base)]:
+                # print("find port:", port)
+                serial_port = port
+                serial_ports.append(serial_port)
+    return serial_ports
 
 
 if __name__ == "__main__":

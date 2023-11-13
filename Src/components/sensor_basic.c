@@ -37,7 +37,7 @@ void Sensor_Data_Prepare(uint8_t dT_ms)
 {
 	float hz = 0;
 	if (dT_ms != 0)
-		hz = 1000 / dT_ms;
+		hz = 1000. / dT_ms;
 
 	/*静止检测*/
 	motionless_check(dT_ms);
@@ -49,7 +49,8 @@ void Sensor_Data_Prepare(uint8_t dT_ms)
 		sensor.Gyro_deg[i] = sensor.Gyro_Original[i] * 0.061036f; //  /65535 * 4000; +-2000度 0.061
 
 		/*陀螺仪转换到弧度度每秒，量程+-2000度*/
-		sensor.Gyro_rad[i] = sensor.Gyro_deg[i] * 0.01745f; // sensor.Gyro[i] *RANGE_PN2000_TO_RAD ;//  0.001065264436f //微调值 0.0010652f
+		// sensor.Gyro_rad[i] = sensor.Gyro_deg[i] * 0.01745f; // sensor.Gyro[i] *RANGE_PN2000_TO_RAD ;//  0.001065264436f //微调值 0.0010652f
+		sensor.Gyro_rad[i] = sensor.Gyro_deg[i] * RANGE_PN2000_TO_RAD; // sensor.Gyro[i] *RANGE_PN2000_TO_RAD ;//  0.001065264436f //微调值 0.0010652f
 		sensor.gyro_rps[i] = sensor.Gyro_rad[i];
 		/*加速度计转换到厘米每平方秒，量程+-8G*/
 		sensor.accel_mpss[i] = (sensor.Acc_Original[i] * RANGE_PN16G_TO_CMSS) / 100.0f;

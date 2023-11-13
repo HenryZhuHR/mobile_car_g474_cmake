@@ -17,15 +17,10 @@ else
 fi
 
 
-if [ "$(expr substr $(uname -s) 1 5)" = "MINGW" ]; then
-    cmake .. -G "MinGW Makefiles"
-else
-    cmake ..
-fi
+cmake .. -G "Ninja"
 
 
-
-make -j$NUM_CORES
+ninja -j $NUM_CORES
 
 
 

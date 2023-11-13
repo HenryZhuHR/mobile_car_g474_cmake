@@ -162,6 +162,7 @@ int ICM20602_Initialization(void)
 
 	// Enable Interrupts when data is ready
 	ICM20602_Writebyte(INT_ENABLE, 0x01); // Enable DRDY Interrupt
+	HAL_Delay(50);
 
 	return 0; // OK
 }

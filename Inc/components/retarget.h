@@ -1,7 +1,7 @@
 #ifndef _RETARGET_H__
 #define _RETARGET_H__
 
-#include "stm32g4xx_hal.h" # TODO
+#include "stm32g4xx_hal.h" // TODO
 #include <sys/stat.h>
 #include <stdio.h>
 
